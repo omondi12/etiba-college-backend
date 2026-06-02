@@ -1,0 +1,7 @@
+<?php
+namespace App\Models;
+
+class Event extends BaseModel
+{
+    protected $guarded = ['id'];
+}
