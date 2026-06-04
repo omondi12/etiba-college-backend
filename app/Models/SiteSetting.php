@@ -1,9 +1,14 @@
 <?php
 namespace App\Models;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class SiteSetting extends Model
 {
+    use HasUuids;
+
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = ['key', 'value', 'group', 'created_by', 'updated_by'];
 
     public static function get(string $key, $default = null)

@@ -4,24 +4,25 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('courses', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->integer('sort_order')->default(0);
             $table->string('name');
             $table->enum('category', ['certificate', 'diploma', 'short_course'])->default('certificate');
             $table->string('duration');
             $table->string('requirements')->nullable();
             $table->text('description')->nullable();
-            $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_archived')->default(false);
-            $table->timestamp('archived_at')->nullable();
-            $table->unsignedBigInteger('archived_by')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('deleted_by')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+            $table->timestampTz('archived_at')->nullable();
+            $table->uuid('archived_by')->nullable();
+            $table->uuid('created_by')->nullable();
+            $table->uuid('updated_by')->nullable();
+            $table->uuid('deleted_by')->nullable();
+            $table->softDeletesTz();
+            $table->timestampsTz();
         });
     }
     public function down(): void { Schema::dropIfExists('courses'); }

@@ -5,38 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BaseModel extends Model
 {
     use SoftDeletes;
 
-    protected function setAuditFields(): void
-    {
-        $userId = Auth::id();
-
-        if (!$this->exists && !$this->created_by) {
-            $this->created_by = $userId;
-        }
-
-        if ($userId) {
-            $this->updated_by = $userId;
-        }
-    }
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected static function booted(): void
     {
         static::creating(function (self $model) {
-            $model->setAuditFields();
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+            $model->created_by = Auth::id() ?? null;
+            $model->updated_by = Auth::id() ?? null;
         });
 
         static::updating(function (self $model) {
-            $model->setAuditFields();
+            $model->updated_by = Auth::id() ?? null;
         });
 
         static::deleting(function (self $model) {
-            $userId = Auth::id();
-            if ($userId && !$model->deleted_by) {
-                $model->deleted_by = $userId;
+            if (!$model->deleted_by) {
+                $model->deleted_by = Auth::id() ?? null;
                 $model->saveQuietly();
             }
         });

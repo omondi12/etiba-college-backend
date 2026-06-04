@@ -4,9 +4,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('contact_enquiries', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email');
             $table->string('phone')->nullable();
@@ -14,10 +15,10 @@ return new class extends Migration {
             $table->text('message');
             $table->boolean('is_read')->default(false);
             $table->boolean('is_archived')->default(false);
-            $table->timestamp('archived_at')->nullable();
-            $table->unsignedBigInteger('deleted_by')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+            $table->timestampTz('archived_at')->nullable();
+            $table->uuid('deleted_by')->nullable();
+            $table->softDeletesTz();
+            $table->timestampsTz();
         });
     }
     public function down(): void { Schema::dropIfExists('contact_enquiries'); }
