@@ -13,7 +13,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password,$user->password)) {
             return response()->json(['status'=>false,'message'=>'Invalid credentials'],401);
         }
-        $token = $user->createToken($request->header('User-Agent','api'))->plainTextToken;
+        $token = $user->createToken('admin-api')->plainTextToken;
         return response()->json(['status'=>true,'data'=>['token'=>$token,'user'=>$user]]);
     }
     public function logout(Request $request)

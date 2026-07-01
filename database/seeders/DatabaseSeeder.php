@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Event;
@@ -16,10 +17,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin user ────────────────────────────────────────────────────────
-        User::updateOrCreate(['email' => 'admin@etiba.ac.ke'], [
+        // Credentials come from env — never hardcode in production.
+        $adminEmail    = env('ADMIN_EMAIL', 'admin@etiba.ac.ke');
+        $adminPassword = env('ADMIN_PASSWORD');
+        if (!$adminPassword) {
+            $adminPassword = Str::random(24);
+            $this->command->warn("No ADMIN_PASSWORD set in .env — generated: {$adminPassword}");
+        }
+        User::updateOrCreate(['email' => $adminEmail], [
             'name'              => 'Etiba Admin',
-            'email'             => 'admin@etiba.ac.ke',
-            'password'          => Hash::make('Admin@1234'),
+            'email'             => $adminEmail,
+            'password'          => Hash::make($adminPassword),
             'email_verified_at' => now(),
         ]);
 

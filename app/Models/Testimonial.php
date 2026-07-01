@@ -3,5 +3,5 @@ namespace App\Models;
 
 class Testimonial extends BaseModel
 {
-    protected $guarded = ['id'];
+    protected $fillable = ['name', 'role', 'quote', 'rating', 'is_active', 'sort_order'];
 }

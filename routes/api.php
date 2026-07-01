@@ -12,7 +12,7 @@ use App\Http\Controllers\ContactEnquiryController;
 use Illuminate\Support\Facades\Route;
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
-Route::post('v1/login', [AuthController::class, 'login']);
+Route::post('v1/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
 // ── Public read routes ────────────────────────────────────────────────────────
 Route::prefix('v1')->group(function () {
@@ -29,7 +29,7 @@ Route::prefix('v1')->group(function () {
     Route::get('articles',           [ArticleController::class,     'index']);
     Route::get('articles/{id}',      [ArticleController::class,     'show']);
     Route::get('site-settings',      [SiteSettingController::class, 'index']);
-    Route::post('contact-us',        [ContactEnquiryController::class, 'store']);
+    Route::post('contact-us',        [ContactEnquiryController::class, 'store'])->middleware('throttle:5,1');
 });
 
 // ── Protected admin routes ────────────────────────────────────────────────────
