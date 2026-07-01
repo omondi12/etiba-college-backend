@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TeamMemberController extends Controller
 {
@@ -19,10 +20,15 @@ class TeamMemberController extends Controller
             'bio'        => 'nullable|string',
             'email'      => 'nullable|email|max:255',
             'phone'      => 'nullable|string|max:30',
-            'photo'      => 'nullable|string|max:500',
             'is_active'  => 'nullable|boolean',
             'sort_order' => 'nullable|integer',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo')->store('team', 'public');
+        }
+
         return response()->json(['status' => true, 'data' => TeamMember::create($data)], 201);
     }
 
@@ -40,18 +46,27 @@ class TeamMemberController extends Controller
             'bio'        => 'nullable|string',
             'email'      => 'nullable|email|max:255',
             'phone'      => 'nullable|string|max:30',
-            'photo'      => 'nullable|string|max:500',
             'is_active'  => 'nullable|boolean',
             'sort_order' => 'nullable|integer',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
         $item = TeamMember::findOrFail($id);
+
+        if ($request->hasFile('photo')) {
+            if ($item->photo) Storage::disk('public')->delete($item->photo);
+            $data['photo'] = $request->file('photo')->store('team', 'public');
+        }
+
         $item->update($data);
         return response()->json(['status' => true, 'data' => $item]);
     }
 
     public function destroy($id)
     {
-        TeamMember::findOrFail($id)->delete();
+        $item = TeamMember::findOrFail($id);
+        if ($item->photo) Storage::disk('public')->delete($item->photo);
+        $item->delete();
         return response()->json(['status' => true, 'message' => 'Deleted successfully']);
     }
 }
